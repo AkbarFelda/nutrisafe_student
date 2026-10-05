@@ -85,6 +85,7 @@ class _ProfileOverview extends StatelessWidget {
     required this.phone,
     required this.onEdit,
     required this.onLogout,
+    required this.onChangePassword,
   });
 
   final AppRole role;
@@ -92,6 +93,7 @@ class _ProfileOverview extends StatelessWidget {
   final String phone;
   final VoidCallback onEdit;
   final VoidCallback onLogout;
+  final VoidCallback onChangePassword;
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +140,7 @@ class _ProfileOverview extends StatelessWidget {
                 title: 'Keamanan akun',
                 subtitle: 'Ubah password dan keamanan',
                 color: role.primary,
-                onTap: () => Get.snackbar('Keamanan', 'Fitur segera tersedia'),
+                onTap: onChangePassword,
               ),
               const Divider(height: 1),
               _MenuTile(
@@ -164,6 +166,81 @@ class _ProfileOverview extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
             ),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ChangePasswordDialog extends StatefulWidget {
+  const _ChangePasswordDialog({required this.role});
+
+  final AppRole role;
+
+  @override
+  State<_ChangePasswordDialog> createState() => _ChangePasswordDialogState();
+}
+
+class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
+  final _newPasswordController = TextEditingController();
+  final _confirmationController = TextEditingController();
+
+  @override
+  void dispose() {
+    _newPasswordController.dispose();
+    _confirmationController.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    if (_newPasswordController.text.length < 8) {
+      Get.snackbar('Password belum aman', 'Gunakan minimal 8 karakter.');
+      return;
+    }
+    if (_newPasswordController.text != _confirmationController.text) {
+      Get.snackbar(
+        'Password tidak sama',
+        'Periksa kembali konfirmasi password.',
+      );
+      return;
+    }
+    Get.back();
+    Get.snackbar('Berhasil', 'Password akun berhasil diperbarui.');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Ganti Password'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const FormLabel('Password saat ini'),
+            const PasswordField(textInputAction: TextInputAction.next),
+            const SizedBox(height: 14),
+            const FormLabel('Password baru'),
+            PasswordField(
+              controller: _newPasswordController,
+              hint: 'Minimal 8 karakter',
+              textInputAction: TextInputAction.next,
+            ),
+            const SizedBox(height: 14),
+            const FormLabel('Konfirmasi password baru'),
+            PasswordField(
+              controller: _confirmationController,
+              textInputAction: TextInputAction.done,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: Get.back, child: const Text('Batal')),
+        FilledButton(
+          onPressed: _save,
+          style: FilledButton.styleFrom(backgroundColor: widget.role.primary),
+          child: const Text('Simpan Password'),
         ),
       ],
     );

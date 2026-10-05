@@ -125,6 +125,61 @@ void main() {
       await tester.binding.setSurfaceSize(null);
     });
   }
+
+  testWidgets('password visibility can be toggled on login', (tester) async {
+    await tester.pumpWidget(const GetMaterialApp(home: LoginView()));
+
+    final passwordField = find.byType(TextField).at(1);
+    expect(tester.widget<TextField>(passwordField).obscureText, isTrue);
+
+    await tester.tap(find.byTooltip('Tampilkan password'));
+    await tester.pump();
+
+    expect(tester.widget<TextField>(passwordField).obscureText, isFalse);
+    expect(find.byTooltip('Sembunyikan password'), findsOneWidget);
+  });
+
+  testWidgets('account security opens change password form', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(393, 852));
+    await tester.pumpWidget(
+      const GetMaterialApp(home: ProfileView(role: AppRole.student)),
+    );
+
+    final securityTile = find.ancestor(
+      of: find.text('Keamanan akun'),
+      matching: find.byType(ListTile),
+    );
+    await tester.scrollUntilVisible(
+      securityTile,
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(securityTile);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ganti Password'), findsOneWidget);
+    expect(find.text('Password saat ini'), findsOneWidget);
+    expect(find.text('Password baru'), findsOneWidget);
+    expect(find.text('Konfirmasi password baru'), findsOneWidget);
+    await tester.binding.setSurfaceSize(null);
+  });
+
+  testWidgets('school registration shows school identity fields', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const GetMaterialApp(home: RegisterView()));
+
+    await tester.tap(find.text('Umum / Siswa'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sekolah').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nama Sekolah'), findsOneWidget);
+    expect(find.text('NPSN'), findsOneWidget);
+    expect(find.text('Alamat Sekolah'), findsOneWidget);
+    expect(find.text('Jenjang'), findsOneWidget);
+    expect(find.text('Password'), findsNothing);
+  });
 }
 
 class _PhoneScenario {

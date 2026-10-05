@@ -1,11 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nutrisafe_student/app/routes/app_routes.dart';
-import 'package:nutrisafe_student/core/constants/app_colors.dart';
 import 'package:nutrisafe_student/core/widgets/app_shell_widgets.dart';
+import 'package:nutrisafe_student/features/auth/controllers/auth_controller.dart';
+import 'package:nutrisafe_student/features/auth/data/auth_repository.dart';
 
-class LoginForm extends StatelessWidget {
+class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
+
+  @override
+  State<LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  late final AuthController _authController = Get.isRegistered<AuthController>()
+      ? Get.find<AuthController>()
+      : Get.put(AuthController(AuthRepository()));
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _login() {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    if (!GetUtils.isEmail(email) || password.isEmpty) {
+      Get.snackbar(
+        'Data belum lengkap',
+        'Masukkan email dan password yang valid.',
+      );
+      return;
+    }
+    _authController.login(email: email, password: password);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,31 +45,34 @@ class LoginForm extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const FormLabel('📧  Email'),
-        TextField(decoration: appInputDecoration()),
+        TextField(
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.next,
+          decoration: appInputDecoration(
+            hint: 'contoh@email.com',
+            prefixIcon: const Icon(Icons.email_outlined),
+          ),
+        ),
         const SizedBox(height: 12),
         const FormLabel('🔒  Password'),
-        TextField(obscureText: true, decoration: appInputDecoration()),
-        const SizedBox(height: 22),
-        FilledButton(
-          onPressed: () => Get.offAllNamed(AppRoutes.studentDashboard),
-          style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFF078EFF),
-          ),
-          child: const FittedBox(child: Text('Masuk sebagai Siswa')),
+        PasswordField(
+          controller: _passwordController,
+          textInputAction: TextInputAction.done,
         ),
-        const SizedBox(height: 9),
-        OutlinedButton(
-          onPressed: () => Get.offAllNamed(AppRoutes.schoolDashboard),
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size.fromHeight(45),
-            foregroundColor: AppColors.schoolDark,
-            side: const BorderSide(color: AppColors.schoolPrimary),
-          ),
-          child: const FittedBox(
-            child: Text(
-              'Masuk sebagai Sekolah',
-              style: TextStyle(fontWeight: FontWeight.w800),
+        const SizedBox(height: 22),
+        Obx(
+          () => FilledButton(
+            onPressed: _authController.isLoading.value ? null : _login,
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF078EFF),
             ),
+            child: _authController.isLoading.value
+                ? const SizedBox.square(
+                    dimension: 22,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const FittedBox(child: Text('Masuk')),
           ),
         ),
         const SizedBox(height: 12),

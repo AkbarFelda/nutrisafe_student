@@ -37,15 +37,61 @@ InputDecoration appInputDecoration({
   );
 }
 
+class PasswordField extends StatefulWidget {
+  const PasswordField({
+    super.key,
+    this.controller,
+    this.hint,
+    this.textInputAction,
+  });
+
+  final TextEditingController? controller;
+  final String? hint;
+  final TextInputAction? textInputAction;
+
+  @override
+  State<PasswordField> createState() => _PasswordFieldState();
+}
+
+class _PasswordFieldState extends State<PasswordField> {
+  bool _obscureText = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: widget.controller,
+      obscureText: _obscureText,
+      enableSuggestions: false,
+      autocorrect: false,
+      textInputAction: widget.textInputAction,
+      decoration: appInputDecoration(
+        hint: widget.hint,
+        prefixIcon: const Icon(Icons.lock_outline_rounded),
+        suffixIcon: IconButton(
+          tooltip: _obscureText ? 'Tampilkan password' : 'Sembunyikan password',
+          onPressed: () => setState(() => _obscureText = !_obscureText),
+          icon: Icon(
+            _obscureText
+                ? Icons.visibility_off_outlined
+                : Icons.visibility_outlined,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class UploadPlaceholder extends StatelessWidget {
   const UploadPlaceholder({
     super.key,
     this.height = 108,
     this.readOnly = false,
+    this.imageAsset,
   });
 
   final double height;
   final bool readOnly;
+  final String? imageAsset;
 
   @override
   Widget build(BuildContext context) {
@@ -57,23 +103,36 @@ class UploadPlaceholder extends StatelessWidget {
         border: Border.all(color: const Color(0xFF888888)),
         borderRadius: BorderRadius.circular(14),
       ),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (!readOnly)
-              const Icon(
-                Icons.upload_rounded,
-                color: AppColors.muted,
-                size: 36,
+      child: imageAsset != null
+          ? ClipRRect(
+              borderRadius: BorderRadius.circular(13),
+              child: Image.asset(
+                imageAsset!,
+                width: double.infinity,
+                height: height,
+                fit: BoxFit.cover,
+                semanticLabel: 'Bukti foto makanan bermasalah',
+                errorBuilder: (_, _, _) =>
+                    const Center(child: Icon(Icons.broken_image_outlined)),
               ),
-            Text(
-              readOnly ? 'Foto Makanan' : 'PNG, JPG, JPEG',
-              style: const TextStyle(color: AppColors.muted),
+            )
+          : Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!readOnly)
+                    const Icon(
+                      Icons.upload_rounded,
+                      color: AppColors.muted,
+                      size: 36,
+                    ),
+                  Text(
+                    readOnly ? 'Foto Makanan' : 'PNG, JPG, JPEG',
+                    style: const TextStyle(color: AppColors.muted),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

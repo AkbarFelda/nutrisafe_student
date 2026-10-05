@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nutrisafe_student/app/routes/app_routes.dart';
+import 'package:nutrisafe_student/core/constants/app_colors.dart';
 import 'package:nutrisafe_student/core/utils/responsive.dart';
 import 'package:nutrisafe_student/core/widgets/app_role.dart';
 
@@ -17,20 +18,34 @@ class RoleBottomNavigation extends StatelessWidget {
       selectedIndex: index,
       backgroundColor: Colors.white,
       indicatorColor: role.primary.withValues(alpha: .18),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        final selected = states.contains(WidgetState.selected);
+        return TextStyle(
+          color: selected ? role.heading : AppColors.ink,
+          fontSize: 12,
+          fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+        );
+      }),
+      overlayColor: WidgetStatePropertyAll(role.primary.withValues(alpha: .08)),
       elevation: 8,
       shadowColor: Colors.black12,
-      destinations: const [
+      destinations: [
         NavigationDestination(
-          icon: Icon(Icons.notifications_none_rounded),
+          icon: const Icon(
+            Icons.notifications_none_rounded,
+            color: AppColors.ink,
+          ),
+          selectedIcon: Icon(Icons.notifications_rounded, color: role.heading),
           label: 'Notifikasi',
         ),
         NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home_rounded),
+          icon: const Icon(Icons.home_outlined, color: AppColors.ink),
+          selectedIcon: Icon(Icons.home_rounded, color: role.heading),
           label: 'Beranda',
         ),
         NavigationDestination(
-          icon: Icon(Icons.account_circle_outlined),
+          icon: const Icon(Icons.account_circle_outlined, color: AppColors.ink),
+          selectedIcon: Icon(Icons.account_circle_rounded, color: role.heading),
           label: 'Profil',
         ),
       ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nutrisafe_student/app/routes/app_routes.dart';
+import 'package:nutrisafe_student/core/data/dummy_data.dart';
 import 'package:nutrisafe_student/core/utils/responsive.dart';
 import 'package:nutrisafe_student/core/widgets/app_shell_widgets.dart';
 import 'package:nutrisafe_student/features/notifications/presentation/widgets/notification_card.dart';
@@ -31,25 +32,24 @@ class NotificationView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          NotificationCard(
-            role: role,
-            isRead: false,
-            onTap: () => Get.toNamed(
-              role == AppRole.student
-                  ? AppRoutes.studentReportDetail
-                  : AppRoutes.schoolReportDetail,
-            ),
+          ...DummyData.notifications.expand(
+            (notification) => [
+              NotificationCard(
+                role: role,
+                title: notification.title,
+                message: notification.message,
+                time: notification.time,
+                isRead: notification.isRead,
+                onTap: () => Get.toNamed(
+                  role == AppRole.student
+                      ? AppRoutes.studentReportDetail
+                      : AppRoutes.schoolReportDetail,
+                ),
+              ),
+              const SizedBox(height: 7),
+            ],
           ),
-          const SizedBox(height: 7),
-          NotificationCard(
-            role: role,
-            isRead: true,
-            onTap: () => Get.toNamed(
-              role == AppRole.student
-                  ? AppRoutes.studentReportDetail
-                  : AppRoutes.schoolReportDetail,
-            ),
-          ),
+          const SizedBox(height: 12),
         ],
       ),
     );
