@@ -25,7 +25,8 @@ class NotificationCard extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.pagePadding),
       child: Material(
-        color: Colors.white.withValues(alpha: isRead ? .85 : 1),
+        color: Theme.of(context).colorScheme.surfaceContainer
+            .withValues(alpha: isRead ? .85 : 1),
         elevation: isRead ? 0 : 2,
         shadowColor: Colors.black12,
         borderRadius: BorderRadius.circular(16),
@@ -57,15 +58,17 @@ class NotificationCard extends StatelessWidget {
                       Text(
                         title,
                         style: TextStyle(
-                          color: isRead ? Colors.black45 : Colors.black,
+                          color: isRead
+                              ? Theme.of(context).colorScheme.onSurfaceVariant
+                              : Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 3),
                       Text(
                         message,
-                        style: const TextStyle(
-                          color: Colors.black54,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontSize: 10,
                         ),
                       ),
