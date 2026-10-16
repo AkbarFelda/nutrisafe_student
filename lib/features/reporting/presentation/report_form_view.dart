@@ -11,6 +11,91 @@ class ReportFormView extends StatefulWidget {
 
 class _ReportFormViewState extends State<ReportFormView> {
   String? _issue;
+  final _dateController = TextEditingController();
+  final _picker = ImagePicker();
+  Uint8List? _imageBytes;
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectDate() async {
+    final selected = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2025),
+      lastDate: DateTime(2030),
+    );
+    if (selected == null) return;
+    const months = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+    _dateController.text =
+        '${selected.day} ${months[selected.month - 1]} ${selected.year}';
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final image = await _picker.pickImage(
+      source: source,
+      imageQuality: 82,
+      maxWidth: 1600,
+    );
+    if (image == null) return;
+    final bytes = await image.readAsBytes();
+    if (!mounted) return;
+    setState(() => _imageBytes = bytes);
+  }
+
+  void _showImageSource() {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Pilih Sumber Foto',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_outlined),
+                title: const Text('Ambil dari Kamera'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('Pilih dari Galeri'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +115,10 @@ class _ReportFormViewState extends State<ReportFormView> {
               'Formulir Pelaporan Masalah',
               style: TextStyle(
                 fontWeight: FontWeight.w800,
-                color: role.heading,
+                color: role.foreground(context),
               ),
             ),
-            Divider(
-              color: role == AppRole.school ? role.heading : Colors.green,
-            ),
+            Divider(color: role.foreground(context)),
             const SizedBox(height: 12),
             Expanded(
               child: SingleChildScrollView(
@@ -44,6 +127,7 @@ class _ReportFormViewState extends State<ReportFormView> {
                   children: [
                     const FormLabel('Tanggal Kejadian'),
                     TextField(
+                      controller: _dateController,
                       readOnly: true,
                       decoration: appInputDecoration(
                         hint: 'Masukkan Tanggal',
@@ -52,13 +136,7 @@ class _ReportFormViewState extends State<ReportFormView> {
                           Icons.keyboard_arrow_down_rounded,
                         ),
                       ),
-                      onTap: () async {
-                        await showDatePicker(
-                          context: context,
-                          firstDate: DateTime(2025),
-                          lastDate: DateTime(2030),
-                        );
-                      },
+                      onTap: _selectDate,
                     ),
                     const SizedBox(height: 9),
                     const FormLabel('Jenis Masalah'),
@@ -96,7 +174,11 @@ class _ReportFormViewState extends State<ReportFormView> {
                     ),
                     const SizedBox(height: 9),
                     const FormLabel('Upload Foto'),
-                    const UploadPlaceholder(height: 106),
+                    UploadPlaceholder(
+                      height: 150,
+                      imageBytes: _imageBytes,
+                      onTap: _showImageSource,
+                    ),
                     const SizedBox(height: 28),
                   ],
                 ),
@@ -119,7 +201,7 @@ class _ReportFormViewState extends State<ReportFormView> {
   void _showSuccess(AppRole role) {
     Get.dialog<void>(
       AlertDialog(
-        backgroundColor: const Color(0xFFF4F4F4),
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         contentPadding: const EdgeInsets.fromLTRB(44, 38, 44, 40),
         content: Column(
@@ -143,7 +225,7 @@ class _ReportFormViewState extends State<ReportFormView> {
               },
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFF00AD19),
-                foregroundColor: Colors.black,
+                foregroundColor: Colors.white,
                 minimumSize: const Size(190, 44),
               ),
               child: const Text(
@@ -194,7 +276,8 @@ class _MetaChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: .75),
+          color: Theme.of(context).colorScheme.surfaceContainer
+              .withValues(alpha: .92),
           borderRadius: BorderRadius.circular(6),
         ),
         child: Row(

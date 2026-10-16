@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nutrisafe_student/app/routes/app_routes.dart';
 import 'package:nutrisafe_student/core/constants/app_colors.dart';
 import 'package:nutrisafe_student/core/data/dummy_data.dart';
 import 'package:nutrisafe_student/core/utils/responsive.dart';
@@ -57,7 +58,7 @@ class _ProfileViewState extends State<ProfileView> {
                 child: Text(
                   _isEditing ? 'Edit Profile' : 'Profile Saya',
                   style: TextStyle(
-                    color: role.heading,
+                    color: role.foreground(context),
                     fontSize: context.adaptive(24),
                     fontWeight: FontWeight.w900,
                   ),
@@ -75,7 +76,7 @@ class _ProfileViewState extends State<ProfileView> {
                 child: Text(
                   role == AppRole.student ? 'Siswa' : 'Sekolah',
                   style: TextStyle(
-                    color: role.heading,
+                    color: role.foreground(context),
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                   ),
@@ -98,10 +99,11 @@ class _ProfileViewState extends State<ProfileView> {
                     onCancel: () => setState(() => _isEditing = false),
                     onSave: () {
                       setState(() => _isEditing = false);
-                      Get.snackbar(
-                        'Profile diperbarui',
-                        'Perubahan berhasil disimpan secara lokal',
-                        snackPosition: SnackPosition.BOTTOM,
+                      showAppDialog(
+                        title: 'Profil diperbarui',
+                        message: 'Perubahan berhasil disimpan secara lokal.',
+                        icon: Icons.check_circle_outline_rounded,
+                        iconColor: role.primary,
                       );
                     },
                   )
@@ -111,8 +113,16 @@ class _ProfileViewState extends State<ProfileView> {
                     email: emailController.text,
                     phone: phoneController.text,
                     onEdit: () => setState(() => _isEditing = true),
-                    onChangePassword: () =>
-                        Get.dialog<void>(_ChangePasswordDialog(role: role)),
+                    onChangePassword: () => Get.toNamed(
+                      role == AppRole.student
+                          ? AppRoutes.studentSecurity
+                          : AppRoutes.schoolSecurity,
+                    ),
+                    onHelp: () => Get.toNamed(
+                      role == AppRole.student
+                          ? AppRoutes.studentHelp
+                          : AppRoutes.schoolHelp,
+                    ),
                     onLogout: _confirmLogout,
                   ),
           ),

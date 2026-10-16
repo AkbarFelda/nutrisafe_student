@@ -7,6 +7,8 @@ import 'package:nutrisafe_student/features/auth/presentation/register_view.dart'
 import 'package:nutrisafe_student/features/home/presentation/dashboard_views.dart';
 import 'package:nutrisafe_student/features/notifications/presentation/notification_view.dart';
 import 'package:nutrisafe_student/features/profile/presentation/profile_view.dart';
+import 'package:nutrisafe_student/features/profile/presentation/account_security_view.dart';
+import 'package:nutrisafe_student/features/profile/presentation/help_view.dart';
 import 'package:nutrisafe_student/features/reporting/presentation/report_views.dart';
 import 'package:nutrisafe_student/features/school/presentation/school_operation_views.dart';
 
@@ -66,6 +68,11 @@ void main() {
     (name: 'allergy form', page: const AllergyView()),
     (name: 'student profile', page: const ProfileView(role: AppRole.student)),
     (name: 'school profile', page: const ProfileView(role: AppRole.school)),
+    (
+      name: 'student account security',
+      page: const AccountSecurityView(role: AppRole.student),
+    ),
+    (name: 'school help', page: const HelpView(role: AppRole.school)),
   ];
 
   for (final scenario in scenarios) {
@@ -139,28 +146,39 @@ void main() {
     expect(find.byTooltip('Sembunyikan password'), findsOneWidget);
   });
 
-  testWidgets('account security opens change password form', (tester) async {
+  testWidgets('account security is a full page', (tester) async {
     await tester.binding.setSurfaceSize(const Size(393, 852));
     await tester.pumpWidget(
-      const GetMaterialApp(home: ProfileView(role: AppRole.student)),
+      const GetMaterialApp(home: AccountSecurityView(role: AppRole.student)),
     );
-
-    final securityTile = find.ancestor(
-      of: find.text('Keamanan akun'),
-      matching: find.byType(ListTile),
-    );
-    await tester.scrollUntilVisible(
-      securityTile,
-      150,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.tap(securityTile);
-    await tester.pumpAndSettle();
 
     expect(find.text('Ganti Password'), findsOneWidget);
     expect(find.text('Password saat ini'), findsOneWidget);
     expect(find.text('Password baru'), findsOneWidget);
     expect(find.text('Konfirmasi password baru'), findsOneWidget);
+    await tester.binding.setSurfaceSize(null);
+  });
+
+  testWidgets('report date is filled and photo source can be selected', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(393, 852));
+    await tester.pumpWidget(
+      const GetMaterialApp(home: ReportFormView(role: AppRole.student)),
+    );
+
+    await tester.tap(find.byType(TextField).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('15').first);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('15 '), findsWidgets);
+
+    await tester.ensureVisible(find.text('PNG, JPG, JPEG'));
+    await tester.tap(find.text('PNG, JPG, JPEG'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ambil dari Kamera'), findsOneWidget);
+    expect(find.text('Pilih dari Galeri'), findsOneWidget);
     await tester.binding.setSurfaceSize(null);
   });
 
