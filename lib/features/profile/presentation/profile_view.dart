@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nutrisafe_student/app/routes/app_routes.dart';
 import 'package:nutrisafe_student/core/constants/app_colors.dart';
+import 'package:nutrisafe_student/core/data/dummy_data.dart';
 import 'package:nutrisafe_student/core/utils/responsive.dart';
 import 'package:nutrisafe_student/core/widgets/app_shell_widgets.dart';
+import 'package:nutrisafe_student/features/auth/controllers/auth_controller.dart';
+import 'package:nutrisafe_student/features/auth/data/auth_repository.dart';
 
 part 'widgets/profile_components.dart';
 
@@ -19,17 +22,13 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   bool _isEditing = false;
 
-  late final nameController = TextEditingController(
-    text: widget.role == AppRole.student
-        ? 'Icha Aulia Ambarwati'
-        : 'SDN 1 Subang',
-  );
-  late final emailController = TextEditingController(
-    text: widget.role == AppRole.student
-        ? 'icha@student.id'
-        : 'admin@sdn1subang.sch.id',
-  );
-  late final phoneController = TextEditingController(text: '0812 3456 7890');
+  late final dummyProfile = DummyData.profileFor(widget.role);
+  late final nameController = TextEditingController(text: dummyProfile.name);
+  late final emailController = TextEditingController(text: dummyProfile.email);
+  late final phoneController = TextEditingController(text: dummyProfile.phone);
+  late final AuthController authController = Get.isRegistered<AuthController>()
+      ? Get.find<AuthController>()
+      : Get.put(AuthController(AuthRepository()));
 
   @override
   void dispose() {
@@ -59,7 +58,7 @@ class _ProfileViewState extends State<ProfileView> {
                 child: Text(
                   _isEditing ? 'Edit Profile' : 'Profile Saya',
                   style: TextStyle(
-                    color: role.heading,
+                    color: role.foreground(context),
                     fontSize: context.adaptive(24),
                     fontWeight: FontWeight.w900,
                   ),
@@ -77,7 +76,7 @@ class _ProfileViewState extends State<ProfileView> {
                 child: Text(
                   role == AppRole.student ? 'Siswa' : 'Sekolah',
                   style: TextStyle(
-                    color: role.heading,
+                    color: role.foreground(context),
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                   ),
@@ -100,10 +99,11 @@ class _ProfileViewState extends State<ProfileView> {
                     onCancel: () => setState(() => _isEditing = false),
                     onSave: () {
                       setState(() => _isEditing = false);
-                      Get.snackbar(
-                        'Profile diperbarui',
-                        'Perubahan berhasil disimpan secara lokal',
-                        snackPosition: SnackPosition.BOTTOM,
+                      showAppDialog(
+                        title: 'Profil diperbarui',
+                        message: 'Perubahan berhasil disimpan secara lokal.',
+                        icon: Icons.check_circle_outline_rounded,
+                        iconColor: role.primary,
                       );
                     },
                   )
@@ -113,6 +113,16 @@ class _ProfileViewState extends State<ProfileView> {
                     email: emailController.text,
                     phone: phoneController.text,
                     onEdit: () => setState(() => _isEditing = true),
+                    onChangePassword: () => Get.toNamed(
+                      role == AppRole.student
+                          ? AppRoutes.studentSecurity
+                          : AppRoutes.schoolSecurity,
+                    ),
+                    onHelp: () => Get.toNamed(
+                      role == AppRole.student
+                          ? AppRoutes.studentHelp
+                          : AppRoutes.schoolHelp,
+                    ),
                     onLogout: _confirmLogout,
                   ),
           ),
@@ -147,7 +157,10 @@ class _ProfileViewState extends State<ProfileView> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: FilledButton(
-                      onPressed: () => Get.offAllNamed(AppRoutes.login),
+                      onPressed: () {
+                        Get.back();
+                        authController.logout();
+                      },
                       style: FilledButton.styleFrom(
                         backgroundColor: Colors.redAccent,
                         minimumSize: const Size(0, 44),

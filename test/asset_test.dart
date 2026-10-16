@@ -11,6 +11,7 @@ void main() {
     AppAssets.logo,
     AppAssets.bannerLogin,
     AppAssets.bannerPartner,
+    AppAssets.reportEvidence,
   ]) {
     test('$asset exists and is a decodable image', () async {
       final data = await rootBundle.load(asset);

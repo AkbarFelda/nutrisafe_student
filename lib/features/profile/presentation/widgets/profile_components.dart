@@ -85,6 +85,8 @@ class _ProfileOverview extends StatelessWidget {
     required this.phone,
     required this.onEdit,
     required this.onLogout,
+    required this.onChangePassword,
+    required this.onHelp,
   });
 
   final AppRole role;
@@ -92,6 +94,8 @@ class _ProfileOverview extends StatelessWidget {
   final String phone;
   final VoidCallback onEdit;
   final VoidCallback onLogout;
+  final VoidCallback onChangePassword;
+  final VoidCallback onHelp;
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +142,7 @@ class _ProfileOverview extends StatelessWidget {
                 title: 'Keamanan akun',
                 subtitle: 'Ubah password dan keamanan',
                 color: role.primary,
-                onTap: () => Get.snackbar('Keamanan', 'Fitur segera tersedia'),
+                onTap: onChangePassword,
               ),
               const Divider(height: 1),
               _MenuTile(
@@ -146,7 +150,7 @@ class _ProfileOverview extends StatelessWidget {
                 title: 'Bantuan',
                 subtitle: 'FAQ dan kontak bantuan',
                 color: role.primary,
-                onTap: () => Get.snackbar('Bantuan', 'Fitur segera tersedia'),
+                onTap: onHelp,
               ),
             ],
           ),
@@ -257,7 +261,7 @@ class _SurfaceCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(context.cardPadding),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.border),
         boxShadow: const [

@@ -7,11 +7,17 @@ class NotificationCard extends StatelessWidget {
     super.key,
     required this.role,
     required this.isRead,
+    required this.title,
+    required this.message,
+    required this.time,
     required this.onTap,
   });
 
   final AppRole role;
   final bool isRead;
+  final String title;
+  final String message;
+  final String time;
   final VoidCallback onTap;
 
   @override
@@ -19,7 +25,8 @@ class NotificationCard extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.pagePadding),
       child: Material(
-        color: Colors.white.withValues(alpha: isRead ? .85 : 1),
+        color: Theme.of(context).colorScheme.surfaceContainer
+            .withValues(alpha: isRead ? .85 : 1),
         elevation: isRead ? 0 : 2,
         shadowColor: Colors.black12,
         borderRadius: BorderRadius.circular(16),
@@ -49,24 +56,32 @@ class NotificationCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Laporan Terkirim!',
+                        title,
                         style: TextStyle(
-                          color: isRead ? Colors.black45 : Colors.black,
+                          color: isRead
+                              ? Theme.of(context).colorScheme.onSurfaceVariant
+                              : Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 3),
-                      const Text(
-                        'Laporan makanan kepada SPPG Indonesia pada tanggal 1 Februari 2026 berhasil terkirim!',
-                        style: TextStyle(color: Colors.black45, fontSize: 10),
+                      Text(
+                        message,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontSize: 10,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  '12:00',
-                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700),
+                Text(
+                  time,
+                  style: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),

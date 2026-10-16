@@ -55,8 +55,12 @@ class AllergyView extends StatelessWidget {
                   child: PrimaryRoleButton(
                     role: AppRole.school,
                     label: 'Simpan',
-                    onPressed: () =>
-                        Get.snackbar('Berhasil', 'Data alergi disimpan'),
+                    onPressed: () => showAppDialog(
+                      title: 'Berhasil',
+                      message: 'Data alergi berhasil disimpan.',
+                      icon: Icons.check_circle_outline_rounded,
+                      iconColor: AppRole.school.primary,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 24),
@@ -74,7 +78,7 @@ class AllergyView extends StatelessWidget {
             const SizedBox(height: 42),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(9),
               ),
               child: Column(
@@ -94,14 +98,17 @@ class AllergyView extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.w800),
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.all(9),
+                  Padding(
+                    padding: const EdgeInsets.all(9),
                     child: Column(
-                      children: [
-                        _AllergyCard(),
-                        SizedBox(height: 12),
-                        _AllergyCard(),
-                      ],
+                      children: DummyData.allergies
+                          .map(
+                            (allergy) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _AllergyCard(allergy: allergy),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                 ],
@@ -115,7 +122,9 @@ class AllergyView extends StatelessWidget {
 }
 
 class _AllergyCard extends StatelessWidget {
-  const _AllergyCard();
+  const _AllergyCard({required this.allergy});
+
+  final DummyAllergy allergy;
 
   @override
   Widget build(BuildContext context) {
@@ -123,33 +132,42 @@ class _AllergyCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black, width: 1.7),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.onSurface,
+          width: 1.7,
+        ),
         borderRadius: BorderRadius.circular(9),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Icha Aulia Ambarwati',
-            style: TextStyle(fontWeight: FontWeight.w800),
+            allergy.studentName,
+            style: const TextStyle(fontWeight: FontWeight.w800),
           ),
-          Text('Kelas: 6A', style: TextStyle(fontSize: 12)),
-          SizedBox(height: 5),
+          Text(
+            'Kelas: ${allergy.studentClass}',
+            style: const TextStyle(fontSize: 12),
+          ),
+          const SizedBox(height: 5),
           Row(
             children: [
-              Icon(Icons.circle, color: Colors.red, size: 9),
-              SizedBox(width: 7),
+              const Icon(Icons.circle, color: Colors.red, size: 9),
+              const SizedBox(width: 7),
               Expanded(
-                child: Text('Alergi Kacang', style: TextStyle(fontSize: 12)),
+                child: Text(
+                  'Alergi ${allergy.allergen}',
+                  style: const TextStyle(fontSize: 12),
+                ),
               ),
             ],
           ),
           Padding(
-            padding: EdgeInsets.only(left: 16, top: 3),
+            padding: const EdgeInsets.only(left: 16, top: 3),
             child: Text(
-              'Gatal-gatal saat mengkonsumsi kacang',
+              allergy.description,
               style: TextStyle(
-                color: Colors.black38,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontSize: 11,
                 fontStyle: FontStyle.italic,
               ),

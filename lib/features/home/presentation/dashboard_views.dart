@@ -73,7 +73,7 @@ class SchoolDashboardView extends StatelessWidget {
             child: Text(
               'Dashboard Sekolah',
               style: TextStyle(
-                color: AppRole.school.heading,
+                color: AppRole.school.foreground(context),
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
               ),

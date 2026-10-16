@@ -8,6 +8,8 @@ abstract final class AppRoutes {
   static const studentReport = '/student/report';
   static const studentReportDetail = '/student/report/detail';
   static const studentProfile = '/student/profile';
+  static const studentSecurity = '/student/profile/security';
+  static const studentHelp = '/student/profile/help';
 
   static const schoolDashboard = '/school/dashboard';
   static const schoolNotifications = '/school/notifications';
@@ -17,4 +19,6 @@ abstract final class AppRoutes {
   static const foodReceived = '/school/food-received';
   static const allergy = '/school/allergy';
   static const schoolProfile = '/school/profile';
+  static const schoolSecurity = '/school/profile/security';
+  static const schoolHelp = '/school/profile/help';
 }

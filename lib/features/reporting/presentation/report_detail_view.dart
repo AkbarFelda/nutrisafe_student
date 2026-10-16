@@ -23,7 +23,7 @@ class ReportDetailView extends StatelessWidget {
               child: IconButton(
                 onPressed: Get.back,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                color: role.heading,
+                color: role.foreground(context),
               ),
             ),
             const Align(
@@ -73,7 +73,6 @@ class ReportDetailView extends StatelessWidget {
                     initialValue: '1 Februari 2026',
                     decoration: appInputDecoration(
                       prefixIcon: const Icon(Icons.calendar_month_rounded),
-                      suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -83,7 +82,6 @@ class ReportDetailView extends StatelessWidget {
                     initialValue: 'Makanan Basi',
                     decoration: appInputDecoration(
                       prefixIcon: const Icon(Icons.list_alt_rounded),
-                      suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -97,7 +95,11 @@ class ReportDetailView extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   const FormLabel('Bukti Foto'),
-                  const UploadPlaceholder(height: 106, readOnly: true),
+                  const UploadPlaceholder(
+                    height: 180,
+                    readOnly: true,
+                    imageAsset: AppAssets.reportEvidence,
+                  ),
                 ],
               ),
             ),

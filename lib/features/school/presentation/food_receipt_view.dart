@@ -50,7 +50,9 @@ class FoodReceiptView extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   const FormLabel('Upload Foto'),
-                  UploadPlaceholder(height: 110, readOnly: completed),
+                  completed
+                      ? const UploadPlaceholder(height: 110, readOnly: true)
+                      : const ImagePickerField(height: 110),
                 ],
               ),
             ),
