@@ -4,9 +4,10 @@ import 'package:nutrisafe_student/core/constants/app_colors.dart';
 import 'package:nutrisafe_student/core/utils/responsive.dart';
 
 class NutriSafeLogo extends StatelessWidget {
-  const NutriSafeLogo({super.key, this.compact = false});
+  const NutriSafeLogo({super.key, this.compact = false, this.foregroundColor});
 
   final bool compact;
+  final Color? foregroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,13 @@ class NutriSafeLogo extends StatelessWidget {
               'NutriSafe MBG',
               maxLines: 1,
               style: TextStyle(
-                color: compact ? Colors.black : AppColors.navy,
+                color:
+                    foregroundColor ??
+                    (compact
+                        ? Theme.of(context).colorScheme.onSurface
+                        : Theme.of(context).brightness == Brightness.dark
+                        ? Theme.of(context).colorScheme.onSurface
+                        : AppColors.navy),
                 fontSize: context.adaptive(compact ? 17 : 30),
                 fontWeight: FontWeight.w800,
               ),

@@ -15,14 +15,25 @@ class RoleScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: role.background,
+      backgroundColor: isDark ? scheme.surface : role.background,
       body: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [role.surface, role.background, Colors.white],
+            colors: isDark
+                ? [
+                    Color.alphaBlend(
+                      role.primary.withValues(alpha: .16),
+                      scheme.surface,
+                    ),
+                    scheme.surface,
+                    scheme.surface,
+                  ]
+                : [role.surface, role.background, Colors.white],
             stops: const [0, .55, 1],
           ),
         ),

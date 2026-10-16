@@ -8,6 +8,8 @@ import 'package:nutrisafe_student/features/auth/presentation/splash_view.dart';
 import 'package:nutrisafe_student/features/home/presentation/dashboard_views.dart';
 import 'package:nutrisafe_student/features/notifications/presentation/notification_view.dart';
 import 'package:nutrisafe_student/features/profile/presentation/profile_view.dart';
+import 'package:nutrisafe_student/features/profile/presentation/account_security_view.dart';
+import 'package:nutrisafe_student/features/profile/presentation/help_view.dart';
 import 'package:nutrisafe_student/features/reporting/presentation/report_views.dart';
 import 'package:nutrisafe_student/features/school/presentation/school_operation_views.dart';
 
@@ -40,6 +42,14 @@ abstract final class AppPages {
       page: () => const ProfileView(role: AppRole.student),
     ),
     GetPage<void>(
+      name: AppRoutes.studentSecurity,
+      page: () => const AccountSecurityView(role: AppRole.student),
+    ),
+    GetPage<void>(
+      name: AppRoutes.studentHelp,
+      page: () => const HelpView(role: AppRole.student),
+    ),
+    GetPage<void>(
       name: AppRoutes.schoolDashboard,
       page: SchoolDashboardView.new,
     ),
@@ -64,6 +74,14 @@ abstract final class AppPages {
     GetPage<void>(
       name: AppRoutes.schoolProfile,
       page: () => const ProfileView(role: AppRole.school),
+    ),
+    GetPage<void>(
+      name: AppRoutes.schoolSecurity,
+      page: () => const AccountSecurityView(role: AppRole.school),
+    ),
+    GetPage<void>(
+      name: AppRoutes.schoolHelp,
+      page: () => const HelpView(role: AppRole.school),
     ),
   ];
 
