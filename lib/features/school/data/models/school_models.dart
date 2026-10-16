@@ -73,38 +73,83 @@ class SchoolStudentModel {
   const SchoolStudentModel({
     this.id = 0,
     required this.name,
-    required this.email,
-    required this.phone,
-    required this.schoolName,
-    required this.npsn,
+    required this.nisn,
+    required this.className,
+    required this.gender,
     required this.address,
   });
 
   final int id;
   final String name;
-  final String email;
-  final String phone;
-  final String schoolName;
-  final String npsn;
+  final String nisn;
+  final String className;
+  final String gender;
   final String address;
 
   factory SchoolStudentModel.fromJson(Map<String, dynamic> json) =>
       SchoolStudentModel(
         id: int.tryParse('${json['id'] ?? 0}') ?? 0,
         name: '${json['name'] ?? ''}',
-        email: '${json['email'] ?? ''}',
-        phone: '${json['phone'] ?? ''}',
-        schoolName: '${json['school_name'] ?? ''}',
-        npsn: '${json['npsn'] ?? ''}',
+        nisn: '${json['nisn'] ?? ''}',
+        className: '${json['class'] ?? json['class_name'] ?? ''}',
+        gender: '${json['gender'] ?? ''}',
         address: '${json['address'] ?? json['lokasi'] ?? ''}',
       );
 
   Map<String, dynamic> toJson() => {
     'name': name,
-    'email': email,
-    'phone': phone,
-    'school_name': schoolName,
-    'npsn': npsn,
+    'nisn': nisn,
+    'class': className,
+    'gender': gender,
+    'address': address,
+  };
+}
+
+class SchoolClassModel {
+  const SchoolClassModel({required this.id, required this.name});
+
+  final int id;
+  final String name;
+
+  factory SchoolClassModel.fromJson(Map<String, dynamic> json) =>
+      SchoolClassModel(
+        id: int.tryParse('${json['id'] ?? 0}') ?? 0,
+        name: '${json['name'] ?? ''}',
+      );
+}
+
+class SchoolTeacherModel {
+  const SchoolTeacherModel({
+    this.id = 0,
+    required this.name,
+    required this.nip,
+    required this.position,
+    required this.gender,
+    required this.address,
+  });
+
+  final int id;
+  final String name;
+  final String nip;
+  final String position;
+  final String gender;
+  final String address;
+
+  factory SchoolTeacherModel.fromJson(Map<String, dynamic> json) =>
+      SchoolTeacherModel(
+        id: int.tryParse('${json['id'] ?? 0}') ?? 0,
+        name: '${json['name'] ?? ''}',
+        nip: '${json['nip'] ?? ''}',
+        position: '${json['position'] ?? ''}',
+        gender: '${json['gender'] ?? ''}',
+        address: '${json['address'] ?? ''}',
+      );
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'nip': nip,
+    'position': position,
+    'gender': gender,
     'address': address,
   };
 }

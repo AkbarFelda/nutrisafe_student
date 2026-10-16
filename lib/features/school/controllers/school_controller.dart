@@ -10,29 +10,70 @@ class SchoolController extends GetxController {
   final profile = Rxn<SchoolProfileModel>();
   final allergies = <SchoolAllergyModel>[].obs;
   final students = <SchoolStudentModel>[].obs;
+  final classes = <SchoolClassModel>[].obs;
+  final teachers = <SchoolTeacherModel>[].obs;
+  final reports = <Map<String, dynamic>>[].obs;
   final allergyMenu = <String, dynamic>{}.obs;
   final sppgInfo = <String, dynamic>{}.obs;
+  final pendingDelivery = <String, dynamic>{}.obs;
+  final errorMessage = RxnString();
 
   Future<void> loadAll(String token) async {
     if (token.isEmpty || isLoading.value) return;
     isLoading.value = true;
+    errorMessage.value = null;
     try {
       final results = await Future.wait<dynamic>([
-        _repository.getProfile(token),
-        _repository.getAllergies(token),
-        _repository.getAllergyMenu(token),
-        _repository.getSppgInfo(token),
-        _repository.getStudents(token),
+        _attempt(() => _repository.getProfile(token)),
+        _attempt(() => _repository.getAllergies(token)),
+        _attempt(() => _repository.getAllergyMenu(token)),
+        _attempt(() => _repository.getSppgInfo(token)),
+        _attempt(() => _repository.getStudents(token)),
+        _attempt(() => _repository.getClasses(token)),
+        _attempt(() => _repository.getTeachers(token)),
+        _attempt(() => _repository.getReports(token)),
+        _attempt(() => _repository.getPendingDelivery(token)),
       ]);
-      profile.value = results[0] as SchoolProfileModel;
-      allergies.assignAll(results[1] as List<SchoolAllergyModel>);
-      allergyMenu.assignAll(results[2] as Map<String, dynamic>);
-      sppgInfo.assignAll(results[3] as Map<String, dynamic>);
-      students.assignAll(results[4] as List<SchoolStudentModel>);
-    } catch (_) {
-      // Demo screens retain their local dummy data when the API is unavailable.
+      if (results[0] case final SchoolProfileModel value) profile.value = value;
+      if (results[1] case final List<SchoolAllergyModel> value) {
+        allergies.assignAll(value);
+      }
+      if (results[2] case final Map<String, dynamic> value) {
+        allergyMenu.assignAll(value);
+      }
+      if (results[3] case final Map<String, dynamic> value) {
+        sppgInfo.assignAll(value);
+      }
+      if (results[4] case final List<SchoolStudentModel> value) {
+        students.assignAll(value);
+      }
+      if (results[5] case final List<SchoolClassModel> value) {
+        classes.assignAll(value);
+      }
+      if (results[6] case final List<SchoolTeacherModel> value) {
+        teachers.assignAll(value);
+      }
+      if (results[7] case final List<Map<String, dynamic>> value) {
+        reports.assignAll(value);
+      }
+      if (results[8] case final Map<String, dynamic> value) {
+        pendingDelivery.assignAll(value);
+      }
+      if (results.every((item) => item == null)) {
+        errorMessage.value = 'Data sekolah tidak dapat dimuat.';
+      }
+    } catch (error) {
+      errorMessage.value = error.toString();
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<T?> _attempt<T>(Future<T> Function() request) async {
+    try {
+      return await request();
+    } catch (_) {
+      return null;
     }
   }
 

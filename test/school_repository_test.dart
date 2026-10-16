@@ -49,10 +49,9 @@ void main() {
       const student = SchoolStudentModel(
         id: 7,
         name: 'Vina',
-        email: 'vina@siswa.sch.id',
-        phone: '081234567890',
-        schoolName: 'SDN Tangerang 15',
-        npsn: '123419293',
+        nisn: '0051234567',
+        className: 'VI A',
+        gender: 'Perempuan',
         address: 'Jl. Merdeka No. 1',
       );
 
@@ -68,16 +67,16 @@ void main() {
       await repository.deleteStudent(token, student.id);
 
       expect(requests, [
-        'GET /api/school/profile',
-        'PUT /api/school/profile',
-        'POST /api/school/allergy-data',
-        'GET /api/school/allergy-data',
-        'GET /api/school/allergy-menu',
-        'GET /api/school/sppg-info',
-        'POST /api/school/students',
-        'GET /api/school/students',
-        'PUT /api/school/students/7',
-        'DELETE /api/school/students/7',
+        'GET /school/profile',
+        'PUT /school/profile',
+        'POST /school/allergy-data',
+        'GET /school/allergy-data',
+        'GET /school/allergy-menu',
+        'GET /school/sppg-info',
+        'POST /school/students',
+        'GET /school/students',
+        'PUT /school/students/7',
+        'DELETE /school/students/7',
       ]);
     },
   );
