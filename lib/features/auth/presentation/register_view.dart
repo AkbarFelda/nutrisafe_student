@@ -19,7 +19,10 @@ class RegisterView extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: context.isShortPhone ? 14 : 24),
-              const NutriSafeLogo(compact: true),
+              const NutriSafeLogo(
+                compact: true,
+                foregroundColor: AppColors.ink,
+              ),
               SizedBox(height: context.isShortPhone ? 12 : 20),
               FoodHeroBanner(height: context.isShortPhone ? 145 : 180),
               SizedBox(height: context.isShortPhone ? 14 : 24),
@@ -36,7 +39,7 @@ class RegisterView extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: context.pagePadding),
                 padding: EdgeInsets.all(context.cardPadding),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const _RegisterForm(),
@@ -101,11 +104,12 @@ class _RegisterFormState extends State<_RegisterForm> {
               _address.text.trim().isNotEmpty
         : _password.text.length >= 8;
     if (!commonIsValid || !roleIsValid) {
-      Get.snackbar(
-        'Data belum lengkap',
-        _isSchool
+      showAppDialog(
+        title: 'Data belum lengkap',
+        message: _isSchool
             ? 'Lengkapi identitas sekolah, NPSN, dan alamat.'
             : 'Lengkapi data dan gunakan password minimal 8 karakter.',
+        icon: Icons.warning_amber_rounded,
       );
       return;
     }
@@ -249,11 +253,14 @@ class _RegisterFormState extends State<_RegisterForm> {
         Center(
           child: GestureDetector(
             onTap: Get.back,
-            child: const Text.rich(
+            child: Text.rich(
               TextSpan(
                 text: 'Sudah punya akun? ',
-                style: TextStyle(color: Colors.black54, fontSize: 12),
-                children: [
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 12,
+                ),
+                children: const [
                   TextSpan(
                     text: 'Masuk',
                     style: TextStyle(

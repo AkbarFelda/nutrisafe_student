@@ -16,7 +16,7 @@ class ApiException implements Exception {
 class AuthRepository {
   AuthRepository({http.Client? client, Uri? baseUri})
     : _client = client ?? http.Client(),
-      _baseUri = baseUri ?? Uri.parse('https://api.nutrisafe.id/api/');
+      _baseUri = baseUri ?? Uri.parse('https://api.nutrisafe.id/');
 
   final http.Client _client;
   final Uri _baseUri;
@@ -56,21 +56,28 @@ class AuthRepository {
       body: jsonEncode(body),
     );
 
-    Map<String, dynamic> json = const {};
-    if (response.body.isNotEmpty) {
-      final decoded = jsonDecode(response.body);
-      if (decoded is Map<String, dynamic>) json = decoded;
-    }
+    final json = _decodeObject(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      final errors = json['errors'];
-      final message =
-          json['message']?.toString() ??
-          (errors is Map && errors.isNotEmpty
-              ? errors.values.first.toString()
-              : 'Permintaan gagal (${response.statusCode}).');
+      final message = _errorMessage(json, response.statusCode);
       throw ApiException(message, statusCode: response.statusCode);
     }
     return json;
+  }
+
+  Map<String, dynamic> _decodeObject(String body) {
+    if (body.trim().isEmpty) return <String, dynamic>{};
+    final decoded = jsonDecode(body);
+    return decoded is Map<String, dynamic> ? decoded : <String, dynamic>{};
+  }
+
+  String _errorMessage(Map<String, dynamic> json, int statusCode) {
+    final errors = json['errors'];
+    if (errors is Map && errors.isNotEmpty) {
+      final value = errors.values.first;
+      if (value is List && value.isNotEmpty) return value.first.toString();
+      return value.toString();
+    }
+    return json['message']?.toString() ?? 'Permintaan gagal ($statusCode).';
   }
 }

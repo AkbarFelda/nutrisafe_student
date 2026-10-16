@@ -34,8 +34,13 @@ class AuthSession {
     final userJson = data['user'] is Map<String, dynamic>
         ? data['user'] as Map<String, dynamic>
         : data;
+    final mergedUserJson = <String, dynamic>{
+      ...userJson,
+      if (!userJson.containsKey('role') && json.containsKey('role'))
+        'role': json['role'],
+    };
     return AuthSession(
-      user: AuthUser.fromJson(userJson, fallbackEmail),
+      user: AuthUser.fromJson(mergedUserJson, fallbackEmail),
       token: (data['token'] ?? data['access_token'] ?? json['token'])
           ?.toString(),
     );

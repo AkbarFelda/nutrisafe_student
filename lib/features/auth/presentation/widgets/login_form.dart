@@ -30,9 +30,10 @@ class _LoginFormState extends State<LoginForm> {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
     if (!GetUtils.isEmail(email) || password.isEmpty) {
-      Get.snackbar(
-        'Data belum lengkap',
-        'Masukkan email dan password yang valid.',
+      showAppDialog(
+        title: 'Data belum lengkap',
+        message: 'Masukkan email dan password yang valid.',
+        icon: Icons.warning_amber_rounded,
       );
       return;
     }
@@ -81,9 +82,12 @@ class _LoginFormState extends State<LoginForm> {
             alignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const Text(
+              Text(
                 'Belum punya akun? ',
-                style: TextStyle(color: Colors.black54, fontSize: 12),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 12,
+                ),
               ),
               GestureDetector(
                 onTap: () => Get.toNamed(AppRoutes.register),

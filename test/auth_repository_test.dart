@@ -35,7 +35,7 @@ void main() {
       password: 'password123',
     );
 
-    expect(captured.url.toString(), 'https://api.nutrisafe.id/api/login');
+    expect(captured.url.toString(), 'https://api.nutrisafe.id/login');
     expect(jsonDecode(captured.body), {
       'email': 'murid@siswa.sch.id',
       'password': 'password123',
@@ -69,7 +69,7 @@ void main() {
 
       expect(
         captured.url.toString(),
-        'https://api.nutrisafe.id/api/register/school',
+        'https://api.nutrisafe.id/register/school',
       );
       expect(jsonDecode(captured.body), {
         'name': 'Vina',
@@ -94,7 +94,31 @@ void main() {
 
     await repository.logout('token-123');
 
-    expect(captured.url.toString(), 'https://api.nutrisafe.id/api/logout');
+    expect(captured.url.toString(), 'https://api.nutrisafe.id/logout');
     expect(captured.headers['Authorization'], 'Bearer token-123');
+  });
+
+  test('login parses the production top-level role and token', () async {
+    final repository = AuthRepository(
+      client: MockClient(
+        (_) async => http.Response(
+          jsonEncode({
+            'status': 'success',
+            'message': 'Login berhasil',
+            'role': 'siswa',
+            'token': 'production-token',
+          }),
+          200,
+        ),
+      ),
+    );
+
+    final session = await repository.login(
+      email: 'murid@siswa.sch.id',
+      password: 'password123',
+    );
+
+    expect(session.token, 'production-token');
+    expect(session.user.role, 'siswa');
   });
 }

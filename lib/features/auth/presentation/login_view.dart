@@ -19,7 +19,10 @@ class LoginView extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: context.isShortPhone ? 16 : 28),
-              const NutriSafeLogo(compact: true),
+              const NutriSafeLogo(
+                compact: true,
+                foregroundColor: AppColors.ink,
+              ),
               SizedBox(height: context.isShortPhone ? 14 : 24),
               const FoodHeroBanner(),
               SizedBox(height: context.isShortPhone ? 18 : 30),
@@ -44,7 +47,7 @@ class LoginView extends StatelessWidget {
                     context.isShortPhone ? 20 : 27,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const LoginForm(),
