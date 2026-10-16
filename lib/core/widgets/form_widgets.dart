@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nutrisafe_student/core/constants/app_colors.dart';
 import 'package:nutrisafe_student/core/widgets/app_role.dart';
 
@@ -24,7 +27,6 @@ InputDecoration appInputDecoration({
     prefixIcon: prefixIcon,
     suffixIcon: suffixIcon,
     filled: true,
-    fillColor: AppColors.field,
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
@@ -87,52 +89,138 @@ class UploadPlaceholder extends StatelessWidget {
     this.height = 108,
     this.readOnly = false,
     this.imageAsset,
+    this.imageBytes,
+    this.onTap,
   });
 
   final double height;
   final bool readOnly;
   final String? imageAsset;
+  final Uint8List? imageBytes;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: readOnly ? Colors.transparent : AppColors.field,
-        border: Border.all(color: const Color(0xFF888888)),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: imageAsset != null
-          ? ClipRRect(
-              borderRadius: BorderRadius.circular(13),
-              child: Image.asset(
-                imageAsset!,
-                width: double.infinity,
-                height: height,
-                fit: BoxFit.cover,
-                semanticLabel: 'Bukti foto makanan bermasalah',
-                errorBuilder: (_, _, _) =>
-                    const Center(child: Icon(Icons.broken_image_outlined)),
-              ),
-            )
-          : Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (!readOnly)
-                    const Icon(
-                      Icons.upload_rounded,
-                      color: AppColors.muted,
-                      size: 36,
-                    ),
-                  Text(
-                    readOnly ? 'Foto Makanan' : 'PNG, JPG, JPEG',
-                    style: const TextStyle(color: AppColors.muted),
-                  ),
-                ],
-              ),
+    final content = imageBytes != null
+        ? ClipRRect(
+            borderRadius: BorderRadius.circular(13),
+            child: Image.memory(
+              imageBytes!,
+              width: double.infinity,
+              height: height,
+              fit: BoxFit.cover,
+              semanticLabel: 'Foto laporan yang dipilih',
             ),
+          )
+        : imageAsset != null
+        ? ClipRRect(
+            borderRadius: BorderRadius.circular(13),
+            child: Image.asset(
+              imageAsset!,
+              width: double.infinity,
+              height: height,
+              fit: BoxFit.cover,
+              semanticLabel: 'Bukti foto makanan bermasalah',
+              errorBuilder: (_, _, _) =>
+                  const Center(child: Icon(Icons.broken_image_outlined)),
+            ),
+          )
+        : Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!readOnly)
+                  const Icon(
+                    Icons.upload_rounded,
+                    color: AppColors.muted,
+                    size: 36,
+                  ),
+                Text(
+                  readOnly ? 'Foto Makanan' : 'PNG, JPG, JPEG',
+                  style: const TextStyle(color: AppColors.muted),
+                ),
+              ],
+            ),
+          );
+    return Material(
+      color: readOnly
+          ? Colors.transparent
+          : Theme.of(context).inputDecorationTheme.fillColor,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          height: height,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xFF888888)),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: content,
+        ),
+      ),
+    );
+  }
+}
+
+class ImagePickerField extends StatefulWidget {
+  const ImagePickerField({super.key, this.height = 150, this.onChanged});
+
+  final double height;
+  final ValueChanged<XFile>? onChanged;
+
+  @override
+  State<ImagePickerField> createState() => _ImagePickerFieldState();
+}
+
+class _ImagePickerFieldState extends State<ImagePickerField> {
+  final ImagePicker _picker = ImagePicker();
+  Uint8List? _imageBytes;
+
+  Future<void> _pickImage(ImageSource source) async {
+    Navigator.of(context).pop();
+    final image = await _picker.pickImage(
+      source: source,
+      imageQuality: 85,
+      maxWidth: 1600,
+    );
+    if (image == null || !mounted) return;
+
+    final bytes = await image.readAsBytes();
+    if (!mounted) return;
+    setState(() => _imageBytes = bytes);
+    widget.onChanged?.call(image);
+  }
+
+  Future<void> _showImageSource() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Kamera'),
+              onTap: () => _pickImage(ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Galeri'),
+              onTap: () => _pickImage(ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return UploadPlaceholder(
+      height: widget.height,
+      imageBytes: _imageBytes,
+      onTap: _showImageSource,
     );
   }
 }

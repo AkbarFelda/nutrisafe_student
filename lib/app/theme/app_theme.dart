@@ -17,13 +17,13 @@ abstract final class AppTheme {
       colorScheme: colorScheme,
       fontFamily: 'Poppins',
       scaffoldBackgroundColor: colorScheme.surface,
-      textTheme: ThemeData.light().textTheme.apply(
+      textTheme: ThemeData(brightness: brightness).textTheme.apply(
         fontFamily: 'Poppins',
-        bodyColor: const Color(0xFF17211B),
-        displayColor: const Color(0xFF17211B),
+        bodyColor: colorScheme.onSurface,
+        displayColor: colorScheme.onSurface,
       ),
       cardTheme: CardThemeData(
-        color: Colors.white,
+        color: colorScheme.surfaceContainer,
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
@@ -34,10 +34,12 @@ abstract final class AppTheme {
         foregroundColor: colorScheme.onSurface,
         elevation: 0,
       ),
-      inputDecorationTheme: const InputDecorationTheme(
+      inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
+        fillColor: brightness == Brightness.dark
+            ? const Color(0xFF202522)
+            : Colors.white,
+        border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(14)),
         ),
         isDense: true,

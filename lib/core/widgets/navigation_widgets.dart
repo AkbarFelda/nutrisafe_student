@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nutrisafe_student/app/routes/app_routes.dart';
-import 'package:nutrisafe_student/core/constants/app_colors.dart';
 import 'package:nutrisafe_student/core/utils/responsive.dart';
 import 'package:nutrisafe_student/core/widgets/app_role.dart';
 
@@ -13,15 +12,16 @@ class RoleBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return NavigationBar(
       height: context.compactHeight(70, minimum: 60),
       selectedIndex: index,
-      backgroundColor: Colors.white,
+      backgroundColor: scheme.surfaceContainer,
       indicatorColor: role.primary.withValues(alpha: .18),
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         final selected = states.contains(WidgetState.selected);
         return TextStyle(
-          color: selected ? role.heading : AppColors.ink,
+          color: selected ? role.primary : scheme.onSurface,
           fontSize: 12,
           fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
         );
@@ -31,21 +31,18 @@ class RoleBottomNavigation extends StatelessWidget {
       shadowColor: Colors.black12,
       destinations: [
         NavigationDestination(
-          icon: const Icon(
-            Icons.notifications_none_rounded,
-            color: AppColors.ink,
-          ),
-          selectedIcon: Icon(Icons.notifications_rounded, color: role.heading),
+          icon: Icon(Icons.notifications_none_rounded, color: scheme.onSurface),
+          selectedIcon: Icon(Icons.notifications_rounded, color: role.primary),
           label: 'Notifikasi',
         ),
         NavigationDestination(
-          icon: const Icon(Icons.home_outlined, color: AppColors.ink),
-          selectedIcon: Icon(Icons.home_rounded, color: role.heading),
+          icon: Icon(Icons.home_outlined, color: scheme.onSurface),
+          selectedIcon: Icon(Icons.home_rounded, color: role.primary),
           label: 'Beranda',
         ),
         NavigationDestination(
-          icon: const Icon(Icons.account_circle_outlined, color: AppColors.ink),
-          selectedIcon: Icon(Icons.account_circle_rounded, color: role.heading),
+          icon: Icon(Icons.account_circle_outlined, color: scheme.onSurface),
+          selectedIcon: Icon(Icons.account_circle_rounded, color: role.primary),
           label: 'Profil',
         ),
       ],
@@ -81,7 +78,7 @@ class PageHeading extends StatelessWidget {
         IconButton(
           onPressed: Get.back,
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          color: role.heading,
+          color: role.foreground(context),
         ),
         const SizedBox(width: 2),
         Expanded(
@@ -90,7 +87,7 @@ class PageHeading extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: role.heading,
+              color: role.foreground(context),
               fontSize: context.adaptive(18),
               fontWeight: FontWeight.w800,
             ),

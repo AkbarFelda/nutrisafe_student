@@ -55,8 +55,12 @@ class AllergyView extends StatelessWidget {
                   child: PrimaryRoleButton(
                     role: AppRole.school,
                     label: 'Simpan',
-                    onPressed: () =>
-                        Get.snackbar('Berhasil', 'Data alergi disimpan'),
+                    onPressed: () => showAppDialog(
+                      title: 'Berhasil',
+                      message: 'Data alergi berhasil disimpan.',
+                      icon: Icons.check_circle_outline_rounded,
+                      iconColor: AppRole.school.primary,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 24),
@@ -74,7 +78,7 @@ class AllergyView extends StatelessWidget {
             const SizedBox(height: 42),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(9),
               ),
               child: Column(
@@ -128,7 +132,10 @@ class _AllergyCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black, width: 1.7),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.onSurface,
+          width: 1.7,
+        ),
         borderRadius: BorderRadius.circular(9),
       ),
       child: Column(
@@ -159,8 +166,8 @@ class _AllergyCard extends StatelessWidget {
             padding: const EdgeInsets.only(left: 16, top: 3),
             child: Text(
               allergy.description,
-              style: const TextStyle(
-                color: Colors.black38,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontSize: 11,
                 fontStyle: FontStyle.italic,
               ),

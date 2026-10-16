@@ -15,4 +15,9 @@ extension AppRoleStyle on AppRole {
   Color get surface => this == AppRole.student
       ? AppColors.studentSurface
       : AppColors.schoolSurface;
+
+  Color foreground(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+      ? Theme.of(context).colorScheme.onSurface
+      : heading;
 }
